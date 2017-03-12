@@ -1,0 +1,218 @@
+<html>
+<head>
+  <!-- Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+
+
+</head>
+<body>
+
+<h1> Perceptron Algorithm - Demo </h1>
+
+<!-- Plots go in blank <div> elements. 
+    You can size them in the plot layout,
+    or give the div a size as shown here.
+-->
+<div id="tester" style="width:80%;height:80%;"></div>
+
+ 
+
+  <button onclick="adjustWeight();"> Itiration </button>
+
+  <div id="its"></div>
+  <script>
+ 	var MAX_POINTS = 20;
+ 	var weights = [25,25,100];
+ 	var ITIRATION = 0;
+
+ 	// Line Equation Helper functions 
+ 	// Line equation is 2x - y = 0
+ 	function getYgivenX(x) {
+
+ 		return x * 2;
+
+ 	} 
+ 	function getXgivenY(y) {
+ 		return y / 2;
+ 	}
+
+ 	// Weight Vector Equation
+ 	// Considering w0 = A, w1 = B, w2 = C and line equation as A + Bx + Cy = 0
+ 	// Helper function to calculate weight quation parameters
+ 	function calculateXForWeight(y) {
+ 		var w0 = weights[0];
+ 		var w1 = weights[1];
+ 		var w2 = weights[2];
+ 		return  -1 * ((w0 + w2*y) / w1);
+
+ 	}
+ 	function calculateYForWeight(x) {
+ 		var w0 = weights[0];
+ 		var w1 = weights[1];
+ 		var w2 = weights[2];
+
+ 		return -1 * ((w1*x + w0) / w2);
+
+
+ 	}
+
+  	TESTER = document.getElementById('tester');
+
+  	// Starting weight Vector line
+  	var startingX = calculateXForWeight(0);
+  	var endingX = calculateXForWeight(100);
+  	var trace0 = {
+  		x: [0, 100],
+  		y: [0, 100],
+  		mode: 'lines',
+  		type: 'scatter',
+  		line: {
+  			color: 'blue'
+  		}
+
+  	};
+
+  	console.log(trace0);
+		var trace2 = {
+	  x: [0, 50],
+	  y: [0, 100],
+	  mode: 'lines',
+	  type: 'scatter',
+	  line: {
+	  	color: 'green'
+	  },
+	  name: "target Function"
+	  
+	};
+
+
+	// Generate All Points in domain 0-100
+	var trace1 = {
+	  x: [],
+	  y: [],
+	  mode: 'markers',
+	  type: 'scatter',
+	  name: 'Points'
+	};
+
+	var pointsX1 = [];
+	var pointsX2 = [];
+	var resultY = [];
+	for(var i =0; i < MAX_POINTS; i++) {
+
+		var randomX = Math.floor(Math.random() * 100);
+		var randomY = Math.floor(Math.random() * 100);
+
+		if((2 * randomX - randomY) == 0) {
+			i--;
+			continue;
+		}
+		trace1.x.push(randomX);
+		pointsX1.push(randomX);
+		trace1.y.push(randomY);
+		pointsX2.push(randomY);
+
+		// Calculate Y from F: X->Y ideally 
+		// Same equation 2x - y = 0; where x = x1 & y = x2
+
+		var Y = 2*(randomX) - randomY;
+		if(Y < 0) {
+			resultY.push(-1);
+		}else{
+			resultY.push(1)
+		}
+	}
+	console.log(trace1);
+	
+	var data = [trace0, trace1, trace2];
+	var layout = {
+	  xaxis: {range: [-10, 100]},
+	  yaxis: {range: [-10, 100]}
+	};
+	Plotly.newPlot(TESTER, data, layout);
+
+	var update = {
+		x: [15,50],
+		y: [0,100]
+	};
+
+	function moveWeightLine() {
+
+		Plotly.deleteTraces(TESTER, 0);
+
+		var startingX = calculateXForWeight(0);
+	  	var endingX = calculateXForWeight(100);
+
+	  	var startingY = calculateYForWeight(0);
+	  	var endingY = calculateYForWeight(100);
+
+	  	var x3  = calculateXForWeight(-100);
+	  	var y3 = calculateYForWeight(-100);
+
+	  	var newTrace = {
+	  		x: [startingX, endingX, 0, 100, x3, -100],
+	  		y: [0, 100, startingY, endingY, -100, y3],
+	  		mode: 'lines',
+	  		type: 'scatter',
+	  		line: {
+	  			color: 'blue'
+	  		},
+	  		name: "Weight Vector"
+
+	  	};
+
+	  	console.log(newTrace);
+
+		Plotly.addTraces(TESTER, newTrace, 0);
+
+		var text = "Current Itiration = " + ITIRATION;
+		text += " weights = " + weights.toString();
+
+		document.getElementById("its").innerHTML = text;
+
+
+	}
+
+	function adjustWeight() {
+		// Check mis-aligned point
+		var mismatchFoundFlag = false;
+
+		for(var i =0 ; i < MAX_POINTS; i++) {
+
+			// Calculate Dot Product and check mismatch
+			var d1 = weights[0] * 1;
+			var d2 = weights[1] * pointsX1[i];
+			var d3 = weights[2] * pointsX2[i];
+
+			var r = d1+d2+d3;
+
+			var sign = r / Math.abs(r);
+
+			//console.log('Origian Sign = ' + resultY[i] + ' Calculated Sign = ' + sign);
+			if(sign != resultY[i]) {
+
+				// Mismatch found
+				mismatchFoundFlag = true;
+
+				// adjust weight
+				weights[0] = weights[0] + resultY[i] * 1;
+				weights[1] = weights[1] + resultY[i] * pointsX1[i];
+				weights[2] = weights[2] + resultY[i] * pointsX2[i];
+				ITIRATION++;
+				console.log('Itiration = ' + ITIRATION);
+				break;
+
+			}
+
+		}
+
+		moveWeightLine();
+
+
+	}
+	moveWeightLine();
+
+  </script>
+</body>
+</html>
