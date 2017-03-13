@@ -2,7 +2,7 @@
 <head>
   <!-- Plotly.js -->
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
+  <script type="text/javascript" src="math.min.js"></script>
 
 
 </head>
@@ -212,6 +212,40 @@
 
 	}
 	moveWeightLine();
+
+  </script>
+
+  <script type="text/javascript">
+  	
+  		// For Question 3
+
+  		var mathjs = math;
+  		console.log(mathjs);
+  		var X = [];
+  		for(var i =0; i < pointsX1.length; i++) {
+
+  			var point = [pointsX1[i],pointsX2[i]];
+  			X.push(point);
+
+  		}
+  		console.log(X.toString());
+		var y = mathjs.transpose(resultY);
+		console.log(y.toString());
+
+
+		console.log();
+		var transpose = mathjs.transpose(X);
+		console.log(transpose);
+		var mult = (mathjs.multiply(transpose,X));
+
+		console.log(mult);
+		var inv = mathjs.inv(mult);
+		 console.log(inv);
+
+		 var second = mathjs.multiply(transpose,y);
+		 console.log(second);
+		console.log((mathjs.multiply(inv,second)));
+
 
   </script>
 </body>
